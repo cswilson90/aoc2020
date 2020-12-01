@@ -11,7 +11,7 @@ func productOfTwoThatSum(numbers []int, total int) (int, error) {
 		if ok {
 			return other * v, nil
 		}
-		needed[total - v] = v
+		needed[total-v] = v
 	}
 
 	return 0, fmt.Errorf("No two numbers sum to %v", total)
@@ -20,7 +20,7 @@ func productOfTwoThatSum(numbers []int, total int) (int, error) {
 // Finds three numbers from the list that add up to the total and multiplies them
 func productOfThreeThatSum(numbers []int, total int) (int, error) {
 	for i, v := range numbers {
-		product, err := productOfTwoThatSum(numbers[i+1:], total - v)
+		product, err := productOfTwoThatSum(numbers[i+1:], total-v)
 		if err == nil {
 			return v * product, nil
 		}

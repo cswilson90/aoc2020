@@ -1,7 +1,7 @@
 package day1
 
 import (
-    "io/ioutil"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"testing"
