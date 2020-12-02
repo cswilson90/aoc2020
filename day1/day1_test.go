@@ -1,37 +1,16 @@
 package day1
 
 import (
-	"io/ioutil"
-	"strconv"
-	"strings"
 	"testing"
+
+	"github.com/cswilson90/aoc2020"
 )
 
-func readInput(t *testing.T) []int {
-	data, err := ioutil.ReadFile("input.txt")
+func TestDay1Problem1(t *testing.T) {
+	nums, err := aoc2020.ReadIntFile("input.txt")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-
-	stringList := strings.Split(string(data), "\n")
-	nums := make([]int, 0)
-	for _, v := range stringList {
-		if v == "" {
-			continue
-		}
-
-		num, err := strconv.Atoi(v)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
-		nums = append(nums, num)
-	}
-
-	return nums
-}
-
-func TestDay1Problem1(t *testing.T) {
-	nums := readInput(t)
 
 	result, err := productOfTwoThatSum(nums, 2020)
 	if err != nil {
@@ -41,7 +20,10 @@ func TestDay1Problem1(t *testing.T) {
 }
 
 func TestDay1Problem2(t *testing.T) {
-	nums := readInput(t)
+	nums, err := aoc2020.ReadIntFile("input.txt")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	result, err := productOfThreeThatSum(nums, 2020)
 	if err != nil {
