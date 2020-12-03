@@ -28,10 +28,6 @@ func parsePolicy(policy string) (int, int, string, string, error) {
 func SledPasswordsMatchingPolicy(passwords []string) (int, error) {
 	totalMatched := 0
 	for _, policyString := range passwords {
-		if policyString == "" {
-			continue
-		}
-
 		lowerBound, upperBound, matchingLetter, password, err := parsePolicy(policyString)
 		if err != nil {
 			return 0, err
@@ -50,10 +46,6 @@ func SledPasswordsMatchingPolicy(passwords []string) (int, error) {
 func TobogganPasswordsMatchingPolicy(passwords []string) (int, error) {
 	totalMatched := 0
 	for _, policyString := range passwords {
-		if policyString == "" {
-			continue
-		}
-
 		lowerBound, upperBound, matchingLetter, password, err := parsePolicy(policyString)
 		if err != nil {
 			return 0, err

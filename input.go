@@ -34,5 +34,12 @@ func ReadStringFile(filename string) ([]string, error) {
 		return nil, err
 	}
 
-	return strings.Split(string(data), "\n"), nil
+	allStrings := strings.Split(string(data), "\n")
+
+	// Remove empty last line if there is one
+	if allStrings[len(allStrings)-1] == "" {
+		allStrings = allStrings[:len(allStrings)-1]
+	}
+
+	return allStrings, nil
 }
