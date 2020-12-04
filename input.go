@@ -28,13 +28,21 @@ func ReadIntFile(filename string) ([]int, error) {
 	return nums, nil
 }
 
+func ReadStringRecords(filename string) ([]string, error) {
+	return readStringFile(filename, "\n\n")
+}
+
 func ReadStringFile(filename string) ([]string, error) {
+	return readStringFile(filename, "\n")
+}
+
+func readStringFile(filename string, separator string) ([]string, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	allStrings := strings.Split(string(data), "\n")
+	allStrings := strings.Split(string(data), separator)
 
 	// Remove empty last line if there is one
 	if allStrings[len(allStrings)-1] == "" {
