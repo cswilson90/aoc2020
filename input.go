@@ -29,7 +29,18 @@ func ReadIntFile(filename string) ([]int, error) {
 }
 
 func ReadStringRecords(filename string) ([]string, error) {
-	return readStringFile(filename, "\n\n")
+	records, err := readStringFile(filename, "\n\n")
+	if err != nil {
+		return nil, err
+	}
+
+	// Remove triling new line from last record if there is one
+	lastRecordLength := len(records[len(records)-1])
+	if records[len(records)-1][lastRecordLength-1] == '\n' {
+		records[len(records)-1] = records[len(records)-1][:lastRecordLength-1]
+	}
+
+	return records, nil
 }
 
 func ReadStringFile(filename string) ([]string, error) {
