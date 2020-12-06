@@ -8,10 +8,6 @@ import (
 )
 
 var fieldSplit = regexp.MustCompile(`^(.*):(.*)$`)
-var validPID = regexp.MustCompile(`^\d{9}$`)
-var validHairColour = regexp.MustCompile(`^#[0-9a-f]{6}$`)
-var heightSplit = regexp.MustCompile(`^(\d{2,3})(cm|in)$`)
-var requiredFields = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 
 // Parsed a list of passport strings into a list of passports
 func ParsePassports(passportStrings []string) ([]map[string]string, error) {
@@ -65,6 +61,7 @@ func NumberOfValidPassportsStrict(passports []map[string]string) int {
 	return numValid
 }
 
+var requiredFields = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
 func hasAllFields(passport map[string]string) bool {
 	for _, field := range requiredFields {
 		_, ok := passport[field]
@@ -88,6 +85,8 @@ func allFieldsValid(passport map[string]string) bool {
 	return true
 }
 
+var validHairColour = regexp.MustCompile(`^#[0-9a-f]{6}$`)
+var validPID = regexp.MustCompile(`^\d{9}$`)
 func fieldValid(name string, value string) bool {
 	switch name {
 	case "byr":
@@ -118,6 +117,7 @@ func validIntRange(value string, lowerBound int, upperBound int) bool {
 	return intValue >= lowerBound && intValue <= upperBound
 }
 
+var heightSplit = regexp.MustCompile(`^(\d{2,3})(cm|in)$`)
 func validHeight(value string) bool {
 	matches := heightSplit.FindStringSubmatch(value)
 	if matches == nil {
@@ -128,23 +128,16 @@ func validHeight(value string) bool {
 		(matches[2] == "in" && validIntRange(matches[1], 59, 76))
 }
 
+var validEyeColours = map[string]bool{
+	"amb": true,
+	"blu": true,
+	"brn": true,
+	"gry": true,
+	"grn": true,
+	"hzl": true,
+	"oth": true,
+}
 func validEyeColour(value string) bool {
-	switch value {
-	case "amb":
-		return true
-	case "blu":
-		return true
-	case "brn":
-		return true
-	case "gry":
-		return true
-	case "grn":
-		return true
-	case "hzl":
-		return true
-	case "oth":
-		return true
-	default:
-		return false
-	}
+	_, ok := validEyeColours[value]
+	return ok
 }
