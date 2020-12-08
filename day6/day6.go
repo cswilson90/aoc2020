@@ -5,17 +5,7 @@ func SumAnswerCounts(answerGroups [][]string) int {
 	sumCounts := 0
 
 	for _, answerGroup := range answerGroups {
-		groupAnswers := make(map[rune]bool)
-		for _, answerSet := range answerGroup {
-			for _, letter := range answerSet {
-				if letter >= 'a' && letter <= 'z' {
-					groupAnswers[letter] = true
-				}
-			}
-		}
-		for _ = range groupAnswers {
-			sumCounts++
-		}
+		sumCounts += len(getGroupAnswers(answerGroup))
 	}
 
 	return sumCounts
@@ -26,28 +16,27 @@ func SumAllAnswerCounts(answerGroups [][]string) int {
 	sumCounts := 0
 
 	for _, answerGroup := range answerGroups {
-		numPeople := 1
-		groupAnswers := make(map[rune]int)
-		for _, answerSet := range answerGroup {
-			for _, letter := range answerSet {
-				if letter >= 'a' && letter <= 'z' {
-					_, ok := groupAnswers[letter]
-					if !ok {
-						groupAnswers[letter] = 1
-					} else {
-						groupAnswers[letter]++
-					}
-				} else if letter == '\n' {
-					numPeople++
-				}
-			}
-		}
-		for _, count := range groupAnswers {
-			if numPeople == count {
+		for _, count := range getGroupAnswers(answerGroup) {
+			// Increment if everyone in the answer group answered yes
+			if len(answerGroup) == count {
 				sumCounts++
 			}
 		}
 	}
 
 	return sumCounts
+}
+
+func getGroupAnswers(answerGroup []string) map[rune]int {
+	groupAnswers := make(map[rune]int)
+
+	for _, answerSet := range answerGroup {
+		for _, letter := range answerSet {
+			if letter >= 'a' && letter <= 'z' {
+				groupAnswers[letter]++
+			}
+		}
+	}
+
+	return groupAnswers
 }

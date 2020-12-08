@@ -8,23 +8,25 @@ import (
 )
 
 // Takes a list of seat strings and returns the corresponding IDs
-func SeatStringssToIDs(seatStrings []string) ([]int, error) {
+func SeatStringsToIDs(seatStrings []string) ([]int, error) {
 	seatIDs := make([]int, len(seatStrings))
 	for i, seatString := range seatStrings {
 		if len(seatString) != 10 {
 			return nil, fmt.Errorf("String %v not 10 chars long", seatString)
 		}
 
-		seatRow, err := binaryStringToNumber(seatString[:7], "F", "B")
+		// Replace F/L with 0 and B/R with 1 and convert from binary string
+		seatString = strings.Replace(seatString, "F", "0", -1)
+		seatString = strings.Replace(seatString, "B", "1", -1)
+		seatString = strings.Replace(seatString, "L", "0", -1)
+		seatString = strings.Replace(seatString, "R", "1", -1)
+
+		intValue, err := strconv.ParseInt(seatString, 2, 0)
 		if err != nil {
-			return nil, err
-		}
-		seatColumn, err := binaryStringToNumber(seatString[7:], "L", "R")
-		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to convert seat %v: %v", seatString, err.Error())
 		}
 
-		seatIDs[i] = (seatRow * 8) + seatColumn
+		seatIDs[i] = int(intValue)
 	}
 
 	return seatIDs, nil
@@ -32,7 +34,7 @@ func SeatStringssToIDs(seatStrings []string) ([]int, error) {
 
 // Finds the seat with the max ID from the given list of seat strings
 func MaxSeatID(seatStrings []string) (int, error) {
-	seatIDs, err := SeatStringssToIDs(seatStrings)
+	seatIDs, err := SeatStringsToIDs(seatStrings)
 	if err != nil {
 		return 0, err
 	}
@@ -49,7 +51,7 @@ func MaxSeatID(seatStrings []string) (int, error) {
 
 // Finds the missing seat in the list of seat Strings ignoring non existent seats at front and back
 func FindMySeat(seatStrings []string) (int, error) {
-	seatIDs, err := SeatStringssToIDs(seatStrings)
+	seatIDs, err := SeatStringsToIDs(seatStrings)
 	if err != nil {
 		return 0, err
 	}
@@ -64,18 +66,4 @@ func FindMySeat(seatStrings []string) (int, error) {
 	}
 
 	return 0, fmt.Errorf("Empty seat not found")
-}
-
-// Converts a binary string encoded with the given letters to an int
-// e.g. ("AABB", "A", "B") would give 3
-func binaryStringToNumber(binString, zeroChar, oneChar string) (int, error) {
-	binString = strings.Replace(binString, zeroChar, "0", -1)
-	binString = strings.Replace(binString, oneChar, "1", -1)
-
-	intValue, err := strconv.ParseInt(binString, 2, 0)
-	if err != nil {
-		return 0, fmt.Errorf("Failed to convert %v: %v", binString, err.Error())
-	}
-
-	return int(intValue), nil
 }

@@ -21,6 +21,12 @@ type Bag struct {
 	Contains []*BagLink
 }
 
+var (
+	splitBagString   = regexp.MustCompile(`^(\w+ \w+) bags contain (.*)$`)
+	splitLinksString = regexp.MustCompile(`^(\d+) (\w+ \w+) bags?[.]?$`)
+)
+
+// Counts the number of distinct bag colours that can contain a shiny gold bag
 func CountColoursContainingGold(bagMap BagColourMap) int {
 	colourCount := 0
 	for _, bag := range bagMap {
@@ -30,6 +36,16 @@ func CountColoursContainingGold(bagMap BagColourMap) int {
 	}
 
 	return colourCount
+}
+
+// Counts the number of bags you must have inside a shiny gold bag
+func InsideShinyGoldBagCount(bagMap BagColourMap) (int, error) {
+	goldBag, ok := bagMap["shiny gold"]
+	if !ok {
+		return 0, fmt.Errorf("no shiny gold bag found in bag colour map")
+	}
+
+	return sumContainedBags(goldBag, bagMap), nil
 }
 
 func containsShinyGold(bag *Bag, bagMap BagColourMap) bool {
@@ -44,15 +60,6 @@ func containsShinyGold(bag *Bag, bagMap BagColourMap) bool {
 	}
 
 	return false
-}
-
-func InsideShinyGoldBagCount(bagMap BagColourMap) (int, error) {
-	goldBag, ok := bagMap["shiny gold"]
-	if !ok {
-		return 0, fmt.Errorf("no shiny gold bag found in bag colour map")
-	}
-
-	return sumContainedBags(goldBag, bagMap), nil
 }
 
 func sumContainedBags(bag *Bag, bagMap BagColourMap) int {
@@ -79,9 +86,6 @@ func ParseBagStrings(bagStrings []string) (BagColourMap, error) {
 
 	return bagMap, nil
 }
-
-var splitBagString = regexp.MustCompile(`^(\w+ \w+) bags contain (.*)$`)
-var splitLinksString = regexp.MustCompile(`^(\d+) (\w+ \w+) bags?[.]?$`)
 
 func parseBagString(bagString string) (*Bag, error) {
 	matches := splitBagString.FindStringSubmatch(bagString)

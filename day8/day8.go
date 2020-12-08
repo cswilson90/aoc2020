@@ -1,6 +1,7 @@
 package day8
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -24,23 +25,11 @@ var validOperators = map[string]bool{
 	"nop": true,
 }
 
-type EndOfCodeError struct{}
-
-func (e *EndOfCodeError) Error() string {
-	return "Code has finished executing"
-}
-
-type InstructionPointerError struct{}
-
-func (e *InstructionPointerError) Error() string {
-	return "Instruction pointer no pointing at valid code line"
-}
-
-type InfiniteLoopError struct{}
-
-func (e *InfiniteLoopError) Error() string {
-	return "Hit infinite loop in code"
-}
+var (
+	EndOfCodeError          = errors.New("Code has finished executing")
+	InstructionPointerError = errors.New("Instruction pointer no pointing at valid code line")
+	InfiniteLoopError       = errors.New("Hit infinite loop in code")
+)
 
 func ParseMachineInstructions(instructions []string) (*MachineState, error) {
 	instrucs := &MachineState{
@@ -76,9 +65,7 @@ func ParseMachineInstructions(instructions []string) (*MachineState, error) {
 func (m *MachineState) FindInfiniteLoopValue() (int, error) {
 	err := m.ExecuteProgram()
 	if err != nil {
-		// Check if infinte loop error
-		_, ok := err.(*InfiniteLoopError)
-		if ok {
+		if err == InfiniteLoopError {
 			return m.Accumulator, nil
 		}
 		return 0, err
@@ -89,9 +76,7 @@ func (m *MachineState) FindInfiniteLoopValue() (int, error) {
 func (m *MachineState) FixInfiniteLoop() (int, error) {
 	err := m.ExecuteProgram()
 	if err != nil {
-		// Check if not infinte loop error
-		_, ok := err.(*InfiniteLoopError)
-		if !ok {
+		if err != InfiniteLoopError {
 			return 0, err
 		}
 	} else {
@@ -110,9 +95,7 @@ func (m *MachineState) FixInfiniteLoop() (int, error) {
 
 		err := m.ExecuteProgram()
 		if err != nil {
-			// Check if not infinte loop error
-			_, ok := err.(*InfiniteLoopError)
-			if !ok {
+			if err != InfiniteLoopError {
 				return 0, err
 			}
 		} else {
@@ -143,7 +126,7 @@ func (m *MachineState) ExecuteProgram() error {
 
 		_, ok := seenInstrucs[m.NextInstruction]
 		if ok {
-			return &InfiniteLoopError{}
+			return InfiniteLoopError
 		} else {
 			seenInstrucs[m.NextInstruction] = true
 		}
@@ -160,11 +143,11 @@ func (m *MachineState) Reset() {
 
 func (m *MachineState) ExecuteNext() error {
 	if m.NextInstruction < 0 {
-		return &EndOfCodeError{}
+		return EndOfCodeError
 	}
 
 	if m.NextInstruction >= len(m.Code) {
-		return &InstructionPointerError{}
+		return InstructionPointerError
 	}
 
 	m.DoneInstructions = append(m.DoneInstructions, m.NextInstruction)

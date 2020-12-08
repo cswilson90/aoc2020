@@ -50,12 +50,11 @@ func TestDay7(t *testing.T) {
 	}
 
 	colourCount := CountColoursContainingGold(bagMap)
-	t.Errorf("Day 7 Part 1 answer: %v", colourCount)
+	assert.Equal(t, 259, colourCount, "Part 1 incorrect")
 
 	insideGoldCount, err := InsideShinyGoldBagCount(bagMap)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-
-	t.Errorf("Day 7 Part 2 answer: %v", insideGoldCount)
+	assert.Equal(t, 45018, insideGoldCount, "Part 2 incorrect")
 }
