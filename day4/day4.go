@@ -7,17 +7,42 @@ import (
 	"strings"
 )
 
-var fieldSplit = regexp.MustCompile(`^(.*):(.*)$`)
+type Passport struct {
+	Fields map[string]string
+}
+
+var (
+	fieldSplit = regexp.MustCompile(`^(.*):(.*)$`)
+
+	requiredFields = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
+
+	heightSplit = regexp.MustCompile(`^(\d{2,3})(cm|in)$`)
+
+	validHairColour = regexp.MustCompile(`^#[0-9a-f]{6}$`)
+	validPID        = regexp.MustCompile(`^\d{9}$`)
+	validEyeColours = map[string]struct{}{
+		"amb": struct{}{},
+		"blu": struct{}{},
+		"brn": struct{}{},
+		"gry": struct{}{},
+		"grn": struct{}{},
+		"hzl": struct{}{},
+		"oth": struct{}{},
+	}
+)
 
 // Parsed a list of passport strings into a list of passports
-func ParsePassports(passportList [][]string) ([]map[string]string, error) {
-	passports := make([]map[string]string, 0)
+func ParsePassports(passportList [][]string) ([]*Passport, error) {
+	passports := make([]*Passport, 0)
 
 	for _, passportStrings := range passportList {
 		passportString := strings.Join(passportStrings, " ")
 		fields := strings.Split(passportString, " ")
 
-		passport := make(map[string]string)
+		passport := &Passport{
+			Fields: make(map[string]string),
+		}
+
 		for j, field := range fields {
 			if field == "" {
 				continue
@@ -27,7 +52,7 @@ func ParsePassports(passportList [][]string) ([]map[string]string, error) {
 			if matches == nil {
 				return nil, fmt.Errorf("Error parsing passport '%v', field '%v' couldn't split", passportString, j)
 			}
-			passport[matches[1]] = matches[2]
+			passport.Fields[matches[1]] = matches[2]
 		}
 		passports = append(passports, passport)
 	}
@@ -36,11 +61,11 @@ func ParsePassports(passportList [][]string) ([]map[string]string, error) {
 }
 
 // Counts the number of valid passports in the list of passports given
-func NumberOfValidPassports(passports []map[string]string) int {
+func NumberOfValidPassports(passports []*Passport) int {
 	numValid := 0
 
 	for _, passport := range passports {
-		if hasAllFields(passport) {
+		if passport.hasAllFields() {
 			numValid++
 		}
 	}
@@ -49,11 +74,11 @@ func NumberOfValidPassports(passports []map[string]string) int {
 }
 
 // Counts the number of valid passports in the list of passports given
-func NumberOfValidPassportsStrict(passports []map[string]string) int {
+func NumberOfValidPassportsStrict(passports []*Passport) int {
 	numValid := 0
 
 	for _, passport := range passports {
-		if allFieldsValid(passport) {
+		if passport.allFieldsValid() {
 			numValid++
 		}
 	}
@@ -61,11 +86,9 @@ func NumberOfValidPassportsStrict(passports []map[string]string) int {
 	return numValid
 }
 
-var requiredFields = []string{"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"}
-
-func hasAllFields(passport map[string]string) bool {
+func (p *Passport) hasAllFields() bool {
 	for _, field := range requiredFields {
-		_, ok := passport[field]
+		_, ok := p.Fields[field]
 		if !ok {
 			return false
 		}
@@ -73,9 +96,9 @@ func hasAllFields(passport map[string]string) bool {
 	return true
 }
 
-func allFieldsValid(passport map[string]string) bool {
+func (p *Passport) allFieldsValid() bool {
 	for _, field := range requiredFields {
-		value, ok := passport[field]
+		value, ok := p.Fields[field]
 		if !ok {
 			return false
 		}
@@ -85,9 +108,6 @@ func allFieldsValid(passport map[string]string) bool {
 	}
 	return true
 }
-
-var validHairColour = regexp.MustCompile(`^#[0-9a-f]{6}$`)
-var validPID = regexp.MustCompile(`^\d{9}$`)
 
 func fieldValid(name string, value string) bool {
 	switch name {
@@ -119,8 +139,6 @@ func validIntRange(value string, lowerBound int, upperBound int) bool {
 	return intValue >= lowerBound && intValue <= upperBound
 }
 
-var heightSplit = regexp.MustCompile(`^(\d{2,3})(cm|in)$`)
-
 func validHeight(value string) bool {
 	matches := heightSplit.FindStringSubmatch(value)
 	if matches == nil {
@@ -129,16 +147,6 @@ func validHeight(value string) bool {
 
 	return (matches[2] == "cm" && validIntRange(matches[1], 150, 193)) ||
 		(matches[2] == "in" && validIntRange(matches[1], 59, 76))
-}
-
-var validEyeColours = map[string]bool{
-	"amb": true,
-	"blu": true,
-	"brn": true,
-	"gry": true,
-	"grn": true,
-	"hzl": true,
-	"oth": true,
 }
 
 func validEyeColour(value string) bool {
