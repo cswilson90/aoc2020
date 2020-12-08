@@ -45,9 +45,9 @@ func TestDay7(t *testing.T) {
 	}
 
 	bagMap, err := ParseBagStrings(bagStrings)
-    if err != nil {
+	if err != nil {
 		t.Errorf(err.Error())
-    }
+	}
 
 	colourCount := CountColoursContainingGold(bagMap)
 	t.Errorf("Day 7 Part 1 answer: %v", colourCount)

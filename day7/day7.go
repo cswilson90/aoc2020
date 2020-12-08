@@ -17,7 +17,7 @@ type BagLink struct {
 }
 
 type Bag struct {
-	Colour string
+	Colour   string
 	Contains []*BagLink
 }
 
@@ -34,7 +34,7 @@ func CountColoursContainingGold(bagMap BagColourMap) int {
 
 func containsShinyGold(bag *Bag, bagMap BagColourMap) bool {
 	for _, linkedBag := range bag.Contains {
-		if (linkedBag.Colour == "shiny gold") {
+		if linkedBag.Colour == "shiny gold" {
 			return true
 		}
 
@@ -90,7 +90,7 @@ func parseBagString(bagString string) (*Bag, error) {
 	}
 
 	bag := &Bag{
-		Colour: matches[1],
+		Colour:   matches[1],
 		Contains: make([]*BagLink, 0),
 	}
 
