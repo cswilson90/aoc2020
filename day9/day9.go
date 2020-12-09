@@ -27,27 +27,20 @@ func XmasEncryptionWeakness(xmasData []int, preamble int) (int, error) {
 	}
 
 	// Find start and end of range which sums to the target
-	start := 0
-	end := 0
+	start, end := 0, 0
 	runningTotal := xmasData[0]
 
-	for {
+	for runningTotal != target {
 		if runningTotal > target {
 			runningTotal -= xmasData[start]
 			start++
 		} else if runningTotal < target {
 			end++
 			if end >= len(xmasData) {
-				break
+				return 0, fmt.Errorf("Failed to calculate encryption weakness")
 			}
 			runningTotal += xmasData[end]
-		} else if runningTotal == target {
-			break
 		}
-	}
-
-	if runningTotal != target {
-		return 0, fmt.Errorf("Failed to calculate encryption weakness")
 	}
 
 	// Find smallest and largest number in range
