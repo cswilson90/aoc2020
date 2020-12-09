@@ -1,17 +1,17 @@
 package day1
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/cswilson90/aoc2020"
+)
 
 // Finds two numbers from the list that add up to the total and multiplies them
 func productOfTwoThatSum(numbers []int, total int) (int, error) {
-	needed := make(map[int]int)
+	num1, num2, ok := aoc2020.TwoThatSum(numbers, total)
 
-	for _, v := range numbers {
-		other, ok := needed[v]
-		if ok {
-			return other * v, nil
-		}
-		needed[total-v] = v
+	if ok {
+		return num1 * num2, nil
 	}
 
 	return 0, fmt.Errorf("No two numbers sum to %v", total)
