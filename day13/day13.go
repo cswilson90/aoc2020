@@ -95,6 +95,8 @@ func GetFirstTimeOfPattern(schedule string) (int, error) {
 
 		// We can skip forward by the buses which match multiplied together
 		// as we know that's the next time that number of buses will match again
+		// This should really be the lowest common multiple but as all the input
+		// numbers are prime just multiplying them works
 		timeJump := busNums[0]
 		for i := 1; i < matches; i++ {
 			timeJump *= busNums[i]
@@ -105,7 +107,7 @@ func GetFirstTimeOfPattern(schedule string) (int, error) {
 	return timeStamp, nil
 }
 
-// The number of buses in the schedule which match the given start time
+// The number of buses at the start of the schedule which match the given start time
 func patternMatches(busNums []int, time int) int {
 	for i, v := range busNums {
 		if (time+i)%v != 0 {
