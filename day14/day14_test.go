@@ -34,7 +34,7 @@ func TestExample(t *testing.T) {
 	assert.Equal(t, 208, int(answer), "Part 2 Incorrect")
 }
 
-func TestDay10(t *testing.T) {
+func TestDay(t *testing.T) {
 	instructions, err := aoc2020.ReadStringFile("input.txt")
 	if err != nil {
 		t.Errorf(err.Error())

@@ -12,7 +12,7 @@ func TestExample(t *testing.T) {
 	test(t, "example.txt", 25, 286)
 }
 
-func TestDay10(t *testing.T) {
+func TestDay(t *testing.T) {
 	test(t, "input.txt", 508, 30761)
 }
 
