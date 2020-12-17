@@ -39,24 +39,20 @@ func runBootProcess(cubeMap CubeMap) int {
 func runCycle(cubeMap CubeMap) CubeMap {
 	newMap := make(CubeMap)
 	// Caches non active points we've already calculated
-	seenNonActive := make(map[Point]bool)
+	activeNeighbours := make(map[Point]int)
 
 	for point := range cubeMap {
 		for _, adjacentPoint := range point.getAdjacent() {
-			// Skip points we've already calculated
-			if newMap[adjacentPoint] || seenNonActive[adjacentPoint] {
-				continue
-			}
+			activeNeighbours[adjacentPoint]++
+		}
+	}
 
-			// Work out if cube is active in next step
-			activeAdjacent := cubeMap.activeAdjacentCubes(adjacentPoint)
-			if cubeMap[adjacentPoint] && (activeAdjacent == 2 || activeAdjacent == 3) {
-				newMap[adjacentPoint] = true
-			} else if !cubeMap[adjacentPoint] && activeAdjacent == 3 {
-				newMap[adjacentPoint] = true
-			} else {
-				seenNonActive[adjacentPoint] = false
-			}
+	for point, activeAdjacent := range activeNeighbours {
+		// Work out if cube is active in next step
+		if cubeMap[point] && (activeAdjacent == 2 || activeAdjacent == 3) {
+			newMap[point] = true
+		} else if !cubeMap[point] && activeAdjacent == 3 {
+			newMap[point] = true
 		}
 	}
 
@@ -93,17 +89,6 @@ func (p Point4D) getAdjacent() []Point {
 		}
 	}
 	return adjacent
-}
-
-func (m CubeMap) activeAdjacentCubes(point Point) int {
-	allAdjacent := point.getAdjacent()
-	active := 0
-	for _, point := range allAdjacent {
-		if m[point] {
-			active++
-		}
-	}
-	return active
 }
 
 func IntialiseCubeMap3D(input []string) CubeMap {
