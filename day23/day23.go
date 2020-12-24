@@ -52,6 +52,7 @@ func playCrabGame(cupMap CupMap, first int, moves int) {
 	}
 }
 
+// Build a circularly linked list of cups
 func buildCupList(initialNums []int, size int) CupMap {
 	cupMap := make(CupMap)
 	var firstCup, lastCup *Cup
